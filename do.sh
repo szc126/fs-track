@@ -40,7 +40,7 @@ do
 		fstion_folder_existing=$(find -wholename "./${user_id}/${fstion_id} *" -type d)
 		if [ "./${fstion_folder}" != "${fstion_folder_existing}" ]
 		then
-			mv "${fstion_folder}" "${fstion_folder_existing}" --verbose --no-clobber
+			mv "${fstion_folder_existing}" "${fstion_folder}" --verbose --no-clobber
 		fi
 
 		case "${verb}" in
