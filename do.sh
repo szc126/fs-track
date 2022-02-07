@@ -7,7 +7,7 @@ user_id="${2}"
 last_dl_date=$(cat "${user_id}/date.txt")
 last_dl_date_epoch=$(date --date="${last_dl_date}" "+%s")
 
-mkdir "${user_id}"
+mkdir --parents "${user_id}"
 wget "https://fontstruct.com/fontstructors/${user_id}?order=by-recent-changes" --output-document="${user_id}/page-1.htm" --verbose
 
 page_last=$(grep "fs-pagination__last" "${user_id}/page-1.htm" --context=1 | grep -P "(?<=page=)[0-9]+" --only-matching)
@@ -38,7 +38,7 @@ do
 		# the fontstruction was renamed.
 		# find the existing folder
 		fstion_folder_existing=$(find -wholename "./${user_id}/${fstion_id} *" -type d)
-		if [ "./${fstion_folder}" != "${fstion_folder_existing}" ]
+		if [ "./${fstion_folder}" != "${fstion_folder_existing}" ] && [ "${fstion_folder_existing}" != "" ]
 		then
 			mv "${fstion_folder_existing}" "${fstion_folder}" --verbose --no-clobber
 		fi
@@ -51,6 +51,7 @@ do
 			"update")
 				if [ "${fstion_modified_epoch}" -ge "${last_dl_date_epoch}" ]
 				then
+					mkdir --parents "${fstion_folder}"
 					wget "https://fontstruct.com/api/1/fontstructions/${fstion_id}?fast=1&v=${fstion_v}&_cacheable_fragment=1" --output-document="${fstion_out_file}"
 				else
 					all_caught_up="true"
@@ -59,16 +60,16 @@ do
 				;;
 		esac
 
+		if [ "${all_caught_up}" == "true" ]
+		then
+			break
+		fi
+
 		#fstion_slug=$(jq ".slug" "${fstion_out_file}" -r)
 		fstion_modified_seconds_n=$(jq ".modified" "${fstion_out_file}" -r | sed "s/://g")
 		fstion_out_file_new="${fstion_folder}/${fstion_modified_seconds_n}.json"
 
 		mv "${fstion_out_file}" "${fstion_out_file_new}" --verbose --no-clobber
-
-		if [ "${all_caught_up}" == "true" ]
-		then
-			break
-		fi
 	done
 done
 
