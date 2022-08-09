@@ -26,7 +26,7 @@ do
 	do
 		fstion_render_url=$(echo "${fstion_datax}" | grep -E "[^\"]+renderer[^\"]+" --only-matching)
 		fstion_slug=$(echo "${fstion_datax}" | grep -P "[^/]+(?=#comments)" --only-matching)
-		fstion_modified=$(echo "${fstion_datax}" | grep -P "(?<=Last edited: <b>)([^<>]+)" --only-matching | sed -E "s/st|nd|rd|th|,//g")
+		fstion_modified=$(echo "${fstion_datax}" | grep -P "(?<=Last edited: <b>)([^<>]+)" --only-matching | sed -E "s/([0-9])(st|nd|rd|th)|,/\1/g")
 		fstion_modified_n=$(date --date="${fstion_modified}" "+%F")
 		fstion_modified_epoch=$(date --date="${fstion_modified}" "+%s")
 
